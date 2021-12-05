@@ -51,7 +51,7 @@ def swap(a, b):
 
 for line in vents:
     if is_h_or_v(line):
-        #print(line)
+        #print('h_or_v', line)
         _x, _y = line[0][0], line[0][1]
         _x2, _y2 = line[1][0], line[1][1]
 
@@ -71,9 +71,23 @@ for line in vents:
             for y in range(_y, _y2+1):
                 #print(_x, y)
                 sea[y][_x] += 1
-
-        #print_sea(sea)
-        #print('----')
+    else: # diagonal
+        #print('diagonal:' , line)
+        
+        _x, _y = line[0][0], line[0][1]
+        _x2, _y2 = line[1][0], line[1][1]
+        if _x < _x2: x_inc = 1
+        else: x_inc = -1
+        if _y < _y2: y_inc = 1
+        else: y_inc = -1
+        #print(x_inc, y_inc)
+        y = _y
+        for x in range(_x, _x2+x_inc, x_inc):
+            #print(x, y)
+            sea[y][x] += 1  
+            y += y_inc
+    #print_sea(sea)
+    #print('----')
 
 if max_x < 100:
     print_sea(sea)
