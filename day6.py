@@ -1,23 +1,27 @@
 #Day 
-fish = []
+ages = [0] * 9
 with open('day6.input') as f:
     line = f.readline()
     _fish = line.split(',')
     for i in _fish:
-        fish.append(int(i))
+        ages[int(i)] += 1
 
-print(fish)
+print(ages)
 
-days = 80
-
+days = 256
 
 for day in range(days):
-    for i in range(len(fish)):
-        fish[i] -= 1
-        if fish[i] < 0:
-            fish[i] = 6
-            fish.append(8)
-    print("Day: ", day, "Fish: ", len(fish))
+    new_fish = ages[0]
+    for i in range(1, len(ages)):
+        ages[i-1] = ages[i] # move down 1 day
+    
+    ages[6] += new_fish
+    ages[8] = new_fish
+
+    total = 0
+    for i in ages:
+        total += i
+    print("Day: ", day, "Fish: ", total, "Ages: ", ages)
 
 
     
