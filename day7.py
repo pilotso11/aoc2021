@@ -6,8 +6,8 @@ with open('day7.input', 'r') as f:
         hpos.append(int(p))
     hpos.sort()
 
-print (hpos)
-mean = sum(hpos) / len(hpos)
+#print (hpos)
+mean = sum(hpos) // len(hpos)
 median = hpos[len(hpos)//2] 
 print( "mean=",  mean)
 print( "median=", median )
@@ -21,11 +21,10 @@ def cost_of_moving_to(pos, hpos):
 
 min = -1
 minpos = -1
-i = median
 
 for step in range(-1, 2, 2):
     print( "step=", step )
-    i = median
+    i = mean  # median worked for version 1, mean for version 2, need to think about the maths on this one
     while True:
         cost = cost_of_moving_to(i, hpos)
         print(i, "Cost=", cost)
