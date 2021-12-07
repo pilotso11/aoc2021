@@ -15,17 +15,26 @@ print( "median=", median )
 def cost_of_moving_to(pos, hpos):
     cost = 0
     for i in hpos:
-        cost += abs(i - pos)
+        diff = abs(i - pos)
+        cost += sum( range(0, diff+1) )
     return cost
 
 min = -1
 minpos = -1
-for i in range(median-2, median+2):
-    cost = cost_of_moving_to(i, hpos)
-    if min == -1 or cost < min:
-        min = cost
-        minpos = i
-    print(i, "Cost=", cost)
+i = median
+
+for step in range(-1, 2, 2):
+    print( "step=", step )
+    i = median
+    while True:
+        cost = cost_of_moving_to(i, hpos)
+        print(i, "Cost=", cost)
+        if min == -1 or cost <= min:
+            min = cost
+            minpos = i
+        else:
+            break
+        i = i + step
 
 print("Best=", minpos, "Cost=", min)  
 
