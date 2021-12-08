@@ -1,4 +1,5 @@
 import time
+
 cells = {
     'A1': ['A4', 'D1'],
     'A4': ['A1', 'A7', 'B4'],
@@ -47,6 +48,9 @@ mills = (
     ['A7', 'D7', 'G7'] 
 )
 
+DEPTH = 3
+CULL = 3
+TIME_LIMIT = 0.025
 
 MY_SIDE = 0
 ENEMY_SIDE = 1
@@ -88,8 +92,9 @@ def score_board(board, side):
 
 # Print the board
 def print_board(board):
-    for a in range(1,8):
-        for b in range(1,8):
+    print('A B C D E F G')
+    for b in range(7,0, -1):
+        for a in range(1,8):
             cell = i_to_a[a]+str(b)
             if cell in board:
                 print(DISPLAY_BOARD[board[cell]], end=' ')
@@ -183,27 +188,92 @@ def get_moves(board, side, hopper):
                     moves.append('MOVE;' + cell + "," + f)
     return moves
 
+def apply_move(board, side, move):
+    new_board = {}
+    for cell in board: new_board[cell] = board[cell] # copy the board
+    action = move.split(';')
+    parts = action[1].split(',')
+    #print(move, action, parts)
+    if action[0] == 'PLACE':
+        new_board[parts[0]] = side
+    elif action[0] == 'MOVE':
+        new_board[parts[1]] = side
+        new_board[parts[0]] = EMPTY
+    elif action[0] == 'MOVE&TAKE':
+        new_board[parts[1]] = side
+        new_board[parts[0]] = EMPTY
+        new_board[parts[2]] = side
+    return new_board
+
 def score_moves(board, side, moves):
     scores = {}
     for move in moves:
-        new_board = {}
-        for cell in board: new_board[cell] = board[cell] # copy the board
+        new_board = apply_move(board, side, move)
         scores[move] = score_board(new_board, side)
     return scores
 
-board = clear_board()
-my_hopper = 9
-enemy_hopper = 9
-move = 0
+def filter_scores(scores, cull):
+    sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    return sorted_scores[:cull]
 
-while(move < 1):
-    print_board(board)
-    print('Move:', move)
-    print('My hopper:', my_hopper)
-    print('Enemy hopper:', enemy_hopper)
-    move += 1
+def get_move(depth, cull, board, side, hopper, other_hopper, total_tries, start_ms):
+    moves = get_moves(board, side, hopper)
+    scores = score_moves(board, side, moves)
+    best = filter_scores(scores, cull)
 
-    moves = get_moves(board, MY_SIDE, my_hopper)
-    print(moves)
-    scores = score_moves(board, MY_SIDE, moves)
+    total_tries += len(moves)
+    
+    # done at DEPTH or if we reach the TIME_LIMIT
+    if depth == DEPTH or time.perf_counter() - start_ms > TIME_LIMIT:
+        return best[0], total_tries
 
+    scores = {}
+    # Iterate depth on the culled best moves
+    for b in best:
+        new_board = apply_move(board, side, b[0])  # Apply the move
+        if 'PLACE' in b: new_hopper = hopper - 1
+        else: new_hopper = hopper
+
+        # Get next move for opponent
+        other_move, total_tries = get_move(depth+1, cull, new_board, OTHER[side], other_hopper, new_hopper, total_tries, start_ms)
+        if 'PLACE' in other_move[0]: new_other_hopper = other_hopper - 1
+        else: new_other_hopper = other_hopper
+
+        new_board = apply_move(board, OTHER[side], other_move[0]) # Apply the best opponent move
+
+        # recurse down
+        next, total_tries = get_move(depth+1, cull, new_board, side, new_hopper, new_other_hopper, total_tries, start_ms)
+        scores[b[0]] = next[1]
+
+    #print("After sim: depth=", depth, "tries=", total_tries, "scores=", scores)
+    best = filter_scores(scores, 1)
+    #print("Best", best)
+    return best[0], total_tries # return the best move
+
+def run_game():
+    board = clear_board()
+    my_hopper = 9
+    enemy_hopper = 9
+    turn = 0
+
+    while(turn < 50):
+        depth = 0
+        print('Turn:', turn)
+        print('My hopper:', my_hopper)
+        print('Enemy hopper:', enemy_hopper)
+        turn += 1
+
+        start_ms = time.perf_counter()
+        move, tries = get_move(depth, CULL, board, MY_SIDE, my_hopper, enemy_hopper, 0, start_ms)
+        print("move=", move, "tries=", tries, "time=" + str(time.perf_counter() - start_ms))
+        board = apply_move(board, MY_SIDE, move[0])
+        if 'PLACE' in move[0]:
+            my_hopper -= 1  
+        
+        move, tries = get_move(depth, CULL, board, OTHER[MY_SIDE], enemy_hopper, my_hopper, 0, time.perf_counter())
+        board = apply_move(board, OTHER[MY_SIDE], move[0])
+        if 'PLACE' in move[0]:
+            enemy_hopper -= 1  
+        print_board(board)
+
+run_game()
