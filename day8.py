@@ -1,3 +1,6 @@
+
+import time
+
 digits = {
     0: ['a', 'b', 'c','e','f','g'],
     1: ['c', 'f'],
@@ -19,13 +22,14 @@ for d in range(10):
         freq[digit] += 1    
     lengths[d] = len(digits[d])
 
-#print(freq)
-#print(lengths)
+print(freq)
+print(lengths)
 
 sum = 0
 words = []
 result = []
 counts = [0] * 10
+start = time.perf_counter()
 with open('day8.input', 'r') as f:
     while(True):
         lines = f.readline()
@@ -115,8 +119,10 @@ with open('day8.input', 'r') as f:
                     #print("found", i)
         print(result, val)
         sum += val
+end = time.perf_counter()
 
 print("sum=", sum)
+print("time taken=", end - start)
 
                     
 
