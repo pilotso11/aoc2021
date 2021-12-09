@@ -51,14 +51,41 @@ for attempt in range(3):
         print(instructions, file=sys.stderr, flush=True)
     elif attempt == 2:  # just use 1 cell
         last = ' '
-        for i in range(len(magic_phrase)):
+        i = 0
+        while i < len(magic_phrase):
             c = magic_phrase[i]
             if c == ' ':
                 instructions += '<.>'
+                i += 1
+            elif c == last:
+                cnt = 0
+                while i < len(magic_phrase) and magic_phrase[i] == last:
+                    cnt += 1
+                    i += 1
+                if cnt < 20:
+                    while cnt > 0:
+                        cnt -= 1
+                        instructions += '.'
+                else:
+                    instructions += '>'
+                    while cnt >= 26:
+                        instructions += '-[<.>-]'
+                        cnt -= 26
+                    if cnt > 19:
+                        while cnt > 19:
+                            instructions += '-'
+                            cnt -= 1
+                        instructions += '-[<.>-]<'
+                    else:
+                        instructions += '<'
+                        while cnt > 0:
+                            instructions += '.'
+                            cnt -= 1
             else:
                 instructions += print_letter(c, starting=last)
                 instructions += '.'
                 last = c
+                i += 1
     else:
         MAX_TOPS = 6
         WILD_CARD_SPACE=30
