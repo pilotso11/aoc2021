@@ -1,18 +1,11 @@
 #include <iostream>
 #include <string>
 using namespace std;
-string R = "RIGHT", L = "LEFT", W = "WAIT", B = "BLOCK";
+string R = "RIGHT", L = "LEFT", W = "WAIT", B = "BLOCK", direction, cmd;
 
 int main()
 {
-    int nb_floors,
-        width,
-        nb_rounds,
-        exit_floor,
-        exit_pos,
-        nb_total_clones,
-        nb_additional_elevators,
-        nb_elevators;
+    int nb_floors,width, nb_rounds,exit_floor,exit_pos,nb_total_clones,nb_additional_elevators,nb_elevators, clone_floor,clone_pos,elevator_floor, elevator_pos;
     cin >> nb_floors >> width >> nb_rounds >> exit_floor >> exit_pos >> nb_total_clones >> nb_additional_elevators >> nb_elevators;
     cin.ignore();
 
@@ -20,23 +13,17 @@ int main()
 
     for (int i = 0; i < nb_elevators; i++)
     {
-        int elevator_floor; // floor on which this elevator is found
-        int elevator_pos;   // position of the elevator on its floor
         cin >> elevator_floor >> elevator_pos;
         cin.ignore();
         elevators[elevator_floor] = elevator_pos;
     }
 
-    // game loop
     while (1)
     {
-        int clone_floor,
-            clone_pos;
-        string direction;
+        cmd=W;
         cin >> clone_floor >> clone_pos >> direction;
         cin.ignore();
 
-        string cmd = W;
         if (clone_floor == -1)
             ;
         else if (clone_floor == exit_floor)
