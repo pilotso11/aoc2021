@@ -4,22 +4,35 @@ import math
 # Auto-generated code below aims at helping you parse
 # the standard input according to the problem statement.
 
-def print_letter(c):
+def print_letter(c, starting=' '):
+    o = 0
+    start = 0
+    if starting != ' ':
+        start = ord(starting) - ord('A') + 1
     if c == ' ':
         # print(' ', file=sys.stderr, flush=True)
-        return ''
+        if starting == ' ':
+            return ''
+        o = ord(c) - ord('A') + start
     else:
-        o = ord(c) - ord('A') + 1
+        o = ord(c) - ord('A') + 1 - start
         # print(c, o, file=sys.stderr, flush=True)
-        if o <= 13:
-            return '+' * o
-        else:
-            return '-' * (27 - o)
+
+    if o < 0:
+        o += 27
+
+    if o == 0:
+        return ''
+
+    if o <= 13:
+        return '+' * o
+    else:
+        return '-' * (27 - o)
 
 magic_phrase = input()
 ins = []
 
-for attempt in range(2):
+for attempt in range(3):
     freq = {}
     for c in magic_phrase:
         if c in freq:
@@ -29,13 +42,23 @@ for attempt in range(2):
 
     instructions = ''
 
-    if len(freq_sorted) == 1 and attempt == 0:
+    if attempt == 4:
         instructions += print_letter(freq_sorted[0][0])
         instructions += '.' * (len(magic_phrase) % 26)
         if len(magic_phrase) > 26:
             instructions += '>'
             instructions += '-[<.>-]' * (len(magic_phrase) // 26)
         print(instructions, file=sys.stderr, flush=True)
+    elif attempt == 2:  # just use 1 cell
+        last = ' '
+        for i in range(len(magic_phrase)):
+            c = magic_phrase[i]
+            if c == ' ':
+                instructions += '<.>'
+            else:
+                instructions += print_letter(c, starting=last)
+                instructions += '.'
+                last = c
     else:
         MAX_TOPS = 6
         WILD_CARD_SPACE=30
