@@ -32,7 +32,7 @@ def print_letter(c, starting=' '):
 magic_phrase = input()
 ins = []
 
-for attempt in range(3):
+for attempt in range(6):
     freq = {}
     for c in magic_phrase:
         if c in freq:
@@ -42,12 +42,33 @@ for attempt in range(3):
 
     instructions = ''
 
-    if attempt == 4:
-        instructions += print_letter(freq_sorted[0][0])
-        instructions += '.' * (len(magic_phrase) % 26)
-        if len(magic_phrase) > 26:
+    if attempt >= 3:  # save top 3 letters, + space, use a floater for the rest
+        TOP = min(4-attempt, len(freq_sorted))
+        tops = [''] * TOP
+        last = ' '
+        for i in range(TOP):
+            tops[i] = freq_sorted[i][0]
+            instructions += print_letter(tops[i])
             instructions += '>'
-            instructions += '-[<.>-]' * (len(magic_phrase) // 26)
+        work_area = TOP
+        pos = TOP
+        for c in magic_phrase:
+            target_pos = work_area
+            if c == ' ': target_pos = work_area+1
+            elif c in tops: target_pos = tops.index(c)
+            while pos != target_pos: # move to target location
+                if pos > target_pos:
+                    instructions += '<'
+                    pos -=1
+                else:
+                    instructions += '>'
+                    pos += 1
+            if pos != work_area:
+                instructions += '.'
+            else:
+                instructions += print_letter(c, starting=last)
+                instructions +=  '.'
+                last = c
         print(instructions, file=sys.stderr, flush=True)
     elif attempt == 2:  # just use 1 cell
         last = ' '
