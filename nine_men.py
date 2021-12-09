@@ -61,8 +61,8 @@ MAX_DEPTH = {
     MY_SIDE: MY_DEPTH,
     ENEMY_SIDE: OTHER_DEPTH
 }
-CULL = 5
-TIME_LIMIT = 0.025
+CULL = 6
+TIME_LIMIT = 0.035
 
 weight_links = 0
 weight_friendly_neighbors = 1.0
@@ -292,7 +292,8 @@ def get_next_move(depth, cull, board, side, moves, hopper, other_hopper, total_t
                                      start_ms)
         scores[b[0]] = next[1]
 
-    #print("After sim: depth=", depth, "tries=", total_tries, "scores=", scores, file=sys.stderr, flush=True)
+    if depth == 0:
+        print("After sim: depth=", depth, "tries=", total_tries, "scores=", scores, file=sys.stderr, flush=True)
     best = filter_scores(scores, 1)
     # print("Best", best)
     return best[0], total_tries  # return the best move
