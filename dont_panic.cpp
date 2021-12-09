@@ -1,43 +1,40 @@
 #include <iostream>
 #include <string>
 using namespace std;
-string R = "RIGHT", L = "LEFT", W = "WAIT", B = "BLOCK", direction, cmd;
+string R="RIGHT",L="LEFT",W="WAIT",B="BLOCK",D,m;
 
 int main()
 {
-    int nb_floors,width, nb_rounds,exit_floor,exit_pos,nb_total_clones,nb_additional_elevators,nb_elevators, clone_floor,clone_pos,elevator_floor, elevator_pos;
-    cin >> nb_floors >> width >> nb_rounds >> exit_floor >> exit_pos >> nb_total_clones >> nb_additional_elevators >> nb_elevators;
+    int N,w,X,x,U,M,C,c,E,e,i;
+    cin>>N>>w>>U>>X>>x>>U>>U>>M;
     cin.ignore();
 
-    int elevators[nb_floors];
+    int V[N];
 
-    for (int i = 0; i < nb_elevators; i++)
+    for(i=0;i<M;i++)
     {
-        cin >> elevator_floor >> elevator_pos;
+        cin>>E>>e;
         cin.ignore();
-        elevators[elevator_floor] = elevator_pos;
+        V[E]=e;
     }
 
-    while (1)
+    while(1)
     {
-        cmd=W;
-        cin >> clone_floor >> clone_pos >> direction;
+        m=W;
+        cin>>C>>c>>D;
         cin.ignore();
 
-        if (clone_floor == -1)
-            ;
-        else if (clone_floor == exit_floor)
+        if(C==X) 
         {
-            if ((direction == R && clone_pos > exit_pos) || (direction == L && clone_pos < exit_pos))
-                cmd = B;
+            if(D==R&&c>x||D==L&&c<x)
+                m=B;
         }
-        else if ((direction == R && clone_pos > elevators[clone_floor]) || (direction == L && clone_pos < elevators[clone_floor]))
-            cmd = B;
+        else if(C!=-1&&(D==R&&c>V[C]||D==L&&c<V[C]))
+            m=B;
 
-        if (cmd == W)
-            if ((direction == R && clone_pos == width - 1) || (direction == L && clone_pos == 0))
-                cmd = B;
+        if(m==W&&(D==R&&c==w-1||D==L&&c==0))
+                m=B;
 
-        cout << cmd << endl;
+        cout<<m<<endl;
     }
 }
