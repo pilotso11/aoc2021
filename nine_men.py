@@ -68,6 +68,7 @@ weight_links = 0
 weight_friendly_neighbors = 1.0
 weight_enemy_neighbors = -.5
 weight_mills = 1.0
+weight_next_to_mills = 2.0
 
 # setup an empty board
 def clear_board():
@@ -79,12 +80,29 @@ def clear_board():
 
 # count neighbors of cell occupied by side
 def get_neighbors(board, cell, side):
-    neighbors = 0
+    mine, empty, other = all_neighbors_counts(board, cell, side)
+    return mine
+
+def all_neighbors_counts(board, cell, side):
+    mine = 0
+    empty = 0
+    other = 0
+
     for neighbor in cells[cell]:
         if board[neighbor] == side:
-            neighbors += 1
-    return neighbors
+            mine += 1
+        elif board[neighbor] == EMPTY:
+            empty += 1
+        else:
+            other += 1
+    return mine, empty, other
 
+def in_mill(cell):
+    for m in mills:
+        if cell in m:
+            #print("Cell is in mill", cell, file=sys.stderr, flush=True)
+            return True
+    return False
 
 # score a board
 def score_board(board, side):
@@ -95,11 +113,18 @@ def score_board(board, side):
             score += len(cells[cell]) * weight_links
             score += get_neighbors(board, cell, side) * weight_friendly_neighbors
             score += get_neighbors(board, cell, OTHER[side]) * weight_enemy_neighbors
+        if board[cell] == EMPTY and in_mill(cell):
+            mine, empty, other = all_neighbors_counts(board, cell, side)
+            if other == 0 and mine > 1:
+                # empty cell in mill and i own it and it has no enemy space
+                #print("Next to mill opportunity", cell, file=sys.stderr, flush=True)
+                score += weight_next_to_mills
 
     # calc connected mills
     for m in mills:
         if board[m[0]] == side and board[m[1]] == side and board[m[2]] == side:
             score += weight_mills
+
 
     return score
 
@@ -380,5 +405,6 @@ def online_loop():
         print("My Move: ", move, "tries=", tries, "time=", time.perf_counter() - start_ms, file=sys.stderr, flush=True)
         print(move[0])
 
+#run_game()
 
 online_loop()
