@@ -58,3 +58,49 @@ for min in mins:
 
 print(min_vals)
 print(sum(min_vals))
+
+def flood_fill(grid, flood_grid, y, x):
+    if y < 0 or y > height - 1 or x < 0 or x > width - 1:
+        return
+
+    if flood_grid[y][x] == 1:
+        return
+    
+    if grid[y][x] == 9:
+        return
+
+    flood_grid[y][x] = 1
+    #print_grid(flood_grid)
+    #print('----')
+    
+    flood_fill(grid, flood_grid, y-1, x)
+    flood_fill(grid, flood_grid, y+1, x)
+    flood_fill(grid, flood_grid, y, x-1)
+    flood_fill(grid, flood_grid, y, x+1)
+
+
+
+def get_pool_size(grid, y, x):
+    flood_grid = [[0 for x in range(width)] for y in range(height)]
+    flood_fill(grid, flood_grid, y, x)
+    return sum(sum(row) for row in flood_grid)
+
+pool_sizes = {}
+for m in mins:
+    size = get_pool_size(grid, m[1], m[0])
+    pool_sizes[m] = size
+
+print(pool_sizes)
+
+sorted_sizes = sorted(pool_sizes.values(), key=lambda x: x, reverse=True)
+print(sorted_sizes[:3])
+total = 1
+for n in sorted_sizes[:3]:
+    total = total * n
+print(total)
+
+
+
+
+
+
