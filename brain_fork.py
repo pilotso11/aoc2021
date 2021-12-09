@@ -79,16 +79,20 @@ for attempt in range(5):
                 last = c
         print(instructions, file=sys.stderr, flush=True)
     elif attempt == 2:  # just use 1 cell
-        last = ' '
+        lasts = [' ', ' ']
+        pos = 0
         i = 0
         while i < len(magic_phrase):
             c = magic_phrase[i]
-            if c == ' ':
+            if c == ' ' and pos == 0:
                 instructions += '<.>'
                 i += 1
-            elif c == last:
+            elif c == ' ' and pos == 1:
+                instructions += '>.<'
+                i += 1
+            elif c == lasts[pos]:
                 cnt = 0
-                while i < len(magic_phrase) and magic_phrase[i] == last:
+                while i < len(magic_phrase) and magic_phrase[i] == lasts[pos]:
                     cnt += 1
                     i += 1
                 if cnt < 20:
@@ -111,9 +115,17 @@ for attempt in range(5):
                             instructions += '.'
                             cnt -= 1
             else:
-                instructions += print_letter(c, starting=last)
+                if c > 'L':
+                    if pos == 0:
+                       instructions += '>'
+                       pos = 1
+                else:
+                    if pos == 1:
+                        instructions += '<'
+                        pos = 0
+                instructions += print_letter(c, starting=lasts[pos])
                 instructions += '.'
-                last = c
+                lasts[pos] = c
                 i += 1
     else:
         MAX_TOPS = 6
@@ -131,11 +143,8 @@ for attempt in range(5):
             letter_lookup[f[0]] = i
             i += 1
 
-
         # output the letters
         print(letter_list, file=sys.stderr, flush=True)
-
-
 
         # Write an action using print
         # To debug: print("Debug messages...", file=sys.stderr, flush=True)
