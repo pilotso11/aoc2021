@@ -32,7 +32,7 @@ def print_letter(c, starting=' '):
 magic_phrase = input()
 ins = []
 
-for attempt in range(6):
+for attempt in range(5):
     freq = {}
     for c in magic_phrase:
         if c in freq:
@@ -42,16 +42,24 @@ for attempt in range(6):
 
     instructions = ''
 
-    if attempt >= 3:  # save top 3 letters, + space, use a floater for the rest
-        TOP = min(4-attempt, len(freq_sorted))
+    if attempt == 3 or attempt == 4:  # save top 3 letters, + space, use a floater for the rest
+        TOP = 1
+        if attempt == 3:
+            TOP = min(3, len(freq_sorted))
         tops = [''] * TOP
         last = ' '
+        first = True
         for i in range(TOP):
-            tops[i] = freq_sorted[i][0]
-            instructions += print_letter(tops[i])
-            instructions += '>'
+            tops [i] = freq_sorted[i][0]
+        tops = tops[::-1]
+        print('tops', tops, file=sys.stderr, flush=True)
+        first = True
+        for c in tops:
+            if not first:  instructions += '>'
+            else: first = False
+            instructions += print_letter(c)
         work_area = TOP
-        pos = TOP
+        pos = TOP-1
         for c in magic_phrase:
             target_pos = work_area
             if c == ' ': target_pos = work_area+1
