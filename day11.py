@@ -1,6 +1,6 @@
 map = []
 
-with open("day11.sample") as f:
+with open("day11.input") as f:
     while True:
         line = f.readline()
         if len(line) == 0:
@@ -43,10 +43,18 @@ def add_one(map):
 
 flashes = 0
 turns = 100
-for i in range(turns):
+i = 0
+while True:
     print('After step ', i)
     flashes += add_one(map)
     print_map(map)
+    i += 1
+    total = 0
+    for row in map:
+        total += sum(row)
+    if total == 0:
+        print('All flashed at: ', i)
+        break
 
 print('Flash: ', flashes)
 
