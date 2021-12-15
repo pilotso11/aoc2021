@@ -8,12 +8,47 @@ with open('day15.input') as f:
         for c in line.strip():
             row.append(int(c))
         map.append(row)
+w = len(map[0])
+h = len(map)
+print('w', w, 'h', h)
+
+
+new_map = []
+for i in range(5):
+    for row in map:
+        new_row = []
+        for c in row:
+            new_c = c + i
+            while new_c > 9: new_c -= 9
+            new_row.append(new_c)
+        new_map.append(new_row)
+map = new_map
+w = len(map[0])
+h = len(map)
+print('w', w, 'h', h)
+
+
+new_map = []
+for row in map:
+    new_row = []
+    for i in range(5):
+        for c in row:
+            new_c = c+i
+            while new_c > 9: new_c -= 9
+            new_row.append(new_c)   
+    new_map.append(new_row)
+
+map = new_map
 
 w = len(map[0])
 h = len(map)
+print('w', w, 'h', h)
 start = (0,0)
 end = (w-1, h-1)
+print('start', start, 'end', end)
 
+#for r in map:
+#    print(r)
 
 def heuristic(a, b):
     (x1, y1) = a
@@ -44,7 +79,7 @@ def astar(map, start, end):
 
         for next in neighbors(current):
             new_cost = cost_so_far[current] + map[next[0]][next[1]]
-            if new_cost > max_cost_so_far:
+            if new_cost > max_cost_so_far:  # progress bar
                 max_cost_so_far = new_cost
                 print("...", max_cost_so_far)
             if next not in cost_so_far or new_cost < cost_so_far[next]:
