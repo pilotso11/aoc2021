@@ -19,21 +19,28 @@ hex_to_b ={
 
 def calc(ptype, vals):
     if ptype == 0: # sum
+        print('Sum', vals)
         return sum(vals)
     elif ptype == 1: # product
+        print('Product', vals)
         v = 1
         for i in vals:
             v *= i
         return v
     elif ptype == 2:
+        print('Min', vals)
         return min(vals)
     elif ptype == 3:
+        print('Max', vals)
         return max(vals)
-    elif ptype == 4:
-        return [0,1][vals[0] > vals[1]]
     elif ptype == 5:
-        return [0,1][vals[0] < vals[1]]
+        print('>', vals)
+        return [0,1][vals[0] > vals[1]]
     elif ptype == 6:
+        print('<', vals)
+        return [0,1][vals[0] < vals[1]]
+    elif ptype == 7:
+        print('=', vals)
         return [0,1][vals[0] == vals[1]]
 
 
@@ -95,7 +102,7 @@ def parse_packet(packet, depth):
         return pos, calc(ptype, vals), version_sum
           
 
-with open('day16.sample', 'r') as f:
+with open('day16.input', 'r') as f:
     for line in f:
         packet = ''
         line = line.strip()
@@ -104,6 +111,5 @@ with open('day16.sample', 'r') as f:
 
         print(line)
         pos, vals, version_sum = parse_packet(packet, 0)
-        print(vals)
-        print(version_sum)
+        print("version sum=", version_sum,"result=", vals)
 
